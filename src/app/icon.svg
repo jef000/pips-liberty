@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 36" role="img" aria-label="Pips &amp; Liberty">
+  <!-- Badged cut of the "PL" monogram in components/mark.tsx — Pips &
+       Liberty's initials, and the trading world's own abbreviation for
+       Profit & Loss. Solid tile so it still reads at 16px browser-tab
+       scale, where bare letterforms disappear into the chrome. -->
+  <rect width="37" height="36" rx="10" fill="#047857"/>
+  <g transform="translate(2,2)">
+    <path
+      d="M3 3.5 H12.5 A6.6 6.6 0 0 1 12.5 16.7 H8.8 V28.5 H3 Z M8.8 8.2 V12 H11.9 A1.9 1.9 0 0 0 11.9 8.2 Z"
+      fill="#FFFFFF"
+      fill-rule="evenodd"
+    />
+    <path d="M17 3.5 H23 V23.2 H31.5 V28.5 H17 Z" fill="#0F172A"/>
+  </g>
+</svg>
