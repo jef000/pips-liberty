@@ -1,52 +1,302 @@
 @import "tailwindcss";
 
 @theme {
-  /* Neutral SaaS palette — white canvas, slate ink, one confident accent. */
-  --color-paper: #ffffff;
-  --color-paper-raised: #f8fafc;
-  --color-ink: #0f172a;
-  --color-ink-soft: #475569;
-  --color-ink-faint: #64748b;
-  --color-rule: #e2e8f0;
-  --color-rule-strong: #94a3b8;
-  --color-green: #047857;
-  --color-green-deep: #065f46;
-  --color-green-soft: #ecfdf5;
-  --color-clay: #b45309;
-  --color-clay-soft: #fffbeb;
-  --color-cream: #ffffff;
+  /* Canvas and raised surfaces. Solid, not alpha — they stack predictably
+     over the grain layer and over each other. */
+  --color-canvas: #08090b;
+  --color-surface: #101318;
+  --color-surface-2: #171b22;
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-display: var(--font-geist-sans), ui-sans-serif, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
-    Consolas, monospace;
+  /* Ink. `cream` is headline/body text, `soft` is long-form body copy,
+     `muted` is captions and labels, `ink` is text ON the accent. */
+  --color-cream: #f2f4f3;
+  --color-soft: #c3c8d0;
+  --color-muted: #8e949e;
+  --color-ink: #08090b;
 
-  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -8px rgba(15, 23, 42, 0.1);
-  --shadow-card-hover: 0 4px 8px rgba(15, 23, 42, 0.06), 0 16px 32px -12px rgba(15, 23, 42, 0.18);
+  /* Always light, in both themes — for text on a deliberately dark ground,
+     such as the buttons inside the accent-filled join band. Without it,
+     `text-cream` inverts in light mode and those buttons go dark-on-dark. */
+  --color-on-ink: #f2f4f3;
+
+  /* Hairlines. Solid rather than rgba so a rule reads identically whether it
+     sits on the canvas or on a raised card. */
+  --color-line: #20242c;
+  --color-line-strong: #2f353f;
+
+  /*
+   * Two accent roles, because one cannot do both jobs across two themes.
+   * `accent` is the FILL — buttons, the marker, the marquee, the join band —
+   * and always carries `ink` on top of it. `accent-ink` is accent-coloured
+   * TEXT on the canvas. On black they are the same mint; on white the fill
+   * can stay vivid but the text has to darken to stay legible.
+   */
+  --color-accent: #35e29a;
+  --color-accent-ink: #35e29a;
+  --color-accent-deep: #17a877;
+  --color-amber: #f5b942;
+
+  /* Down candles in the hero backdrop. */
+  --color-candle-down: #454c57;
+
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --font-display:
+    var(--font-display-grotesk), var(--font-geist-sans), ui-sans-serif,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+
+  --shadow-lift: 0 30px 70px -35px rgba(0, 0, 0, 0.95);
+  --shadow-panel:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 24px 60px -30px rgba(0, 0, 0, 0.9);
 }
+
+/*
+ * Non-colour theme knobs, kept out of @theme because nothing needs a utility
+ * class generated for them.
+ */
+:root {
+  --band-edge: rgba(255, 255, 255, 0.07);
+  --grid-line: rgba(255, 255, 255, 0.05);
+  --grain-opacity: 0.04;
+  --glow-opacity: 0.3;
+  --candles-opacity: 0.22;
+}
+
+/*
+ * Light theme.
+ *
+ * Three states, in this order so the later rule always wins at equal
+ * specificity: follow the system when nothing has been chosen, then honour an
+ * explicit choice in either direction.
+ */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --color-canvas: #ffffff;
+    --color-surface: #f7f9f8;
+    --color-surface-2: #eceff0;
+    --color-cream: #0b0f0d;
+    --color-soft: #3d4550;
+    --color-muted: #616973;
+    --color-ink: #04140f;
+    --color-line: #e4e8e7;
+    --color-line-strong: #c7cecb;
+    --color-accent: #10b981;
+    --color-accent-ink: #047857;
+    --color-accent-deep: #059669;
+    --color-amber: #b45309;
+    --color-candle-down: #b9c1c9;
+
+    --band-edge: rgba(0, 0, 0, 0.07);
+    --grid-line: rgba(0, 0, 0, 0.05);
+    --grain-opacity: 0.02;
+    --glow-opacity: 0.16;
+    --candles-opacity: 0.16;
+
+    --shadow-lift: 0 24px 60px -35px rgba(15, 30, 25, 0.35);
+    --shadow-panel:
+      0 1px 0 rgba(255, 255, 255, 0.8) inset,
+      0 12px 32px -20px rgba(15, 30, 25, 0.28);
+  }
+}
+
+:root[data-theme="light"] {
+  --color-canvas: #ffffff;
+  --color-surface: #f7f9f8;
+  --color-surface-2: #eceff0;
+  --color-cream: #0b0f0d;
+  --color-soft: #3d4550;
+  --color-muted: #616973;
+  --color-ink: #04140f;
+  --color-line: #e4e8e7;
+  --color-line-strong: #c7cecb;
+  --color-accent: #10b981;
+  --color-accent-ink: #047857;
+  --color-accent-deep: #059669;
+  --color-amber: #b45309;
+  --color-candle-down: #b9c1c9;
+
+  --band-edge: rgba(0, 0, 0, 0.07);
+  --grid-line: rgba(0, 0, 0, 0.05);
+  --grain-opacity: 0.02;
+  --glow-opacity: 0.16;
+  --candles-opacity: 0.16;
+
+  --shadow-lift: 0 24px 60px -35px rgba(15, 30, 25, 0.35);
+  --shadow-panel:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 12px 32px -20px rgba(15, 30, 25, 0.28);
+}
+
+/* An explicit dark choice has to beat the light media query above. */
+:root[data-theme="dark"] {
+  --color-canvas: #08090b;
+  --color-surface: #101318;
+  --color-surface-2: #171b22;
+  --color-cream: #f2f4f3;
+  --color-soft: #c3c8d0;
+  --color-muted: #8e949e;
+  --color-ink: #08090b;
+  --color-line: #20242c;
+  --color-line-strong: #2f353f;
+  --color-accent: #35e29a;
+  --color-accent-ink: #35e29a;
+  --color-accent-deep: #17a877;
+  --color-amber: #f5b942;
+  --color-candle-down: #454c57;
+
+  --band-edge: rgba(255, 255, 255, 0.07);
+  --grid-line: rgba(255, 255, 255, 0.05);
+  --grain-opacity: 0.04;
+  --glow-opacity: 0.3;
+  --candles-opacity: 0.22;
+
+  --shadow-lift: 0 30px 70px -35px rgba(0, 0, 0, 0.95);
+  --shadow-panel:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 24px 60px -30px rgba(0, 0, 0, 0.9);
+}
+
 
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--color-canvas);
+  color: var(--color-cream);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: var(--color-green);
-  color: var(--color-cream);
+  background: var(--color-accent);
+  color: var(--color-ink);
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Texture
+   ───────────────────────────────────────────────────────────── */
+
+/* A fixed film grain over the whole page. Low enough to be felt rather than
+   seen — it stops the large flat blacks from banding on cheap panels. */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* The generated candlestick chart behind the hero. Masked to fade out at the
+   top so the headline never competes with it. */
+.candles-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--candles-opacity);
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 55%,
+    #000 100%
+  );
+  mask-image: linear-gradient(180deg, transparent 0%, #000 55%, #000 100%);
+}
+
+.candles-bg svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.candles-bg .cndl {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: candle-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes candle-in {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.price-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: dot-pulse 2.2s ease-in-out 1.1s infinite;
+}
+
+@keyframes dot-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.7);
+    opacity: 0.5;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Type
+   ───────────────────────────────────────────────────────────── */
+
+/* Cinematic headline: each line sits in its own overflow track and wipes up
+   from behind its baseline, one after the other. */
+.line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.06em;
+}
+
+.line > span {
+  display: block;
+  transform: translateY(115%);
+  animation: line-up 0.95s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+.line:nth-child(1) > span {
+  animation-delay: 0.1s;
+}
+
+.line:nth-child(2) > span {
+  animation-delay: 0.24s;
+}
+
+.line:nth-child(3) > span {
+  animation-delay: 0.38s;
+}
+
+@keyframes line-up {
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Entrance choreography — above the fold
+   ───────────────────────────────────────────────────────────── */
+
 /*
- * Entrance choreography. Everything with [data-enter] starts hidden and is
- * released in sequence via --enter-delay, so the page assembles itself in
- * order rather than all appearing at once.
+ * Everything with [data-enter] starts hidden and is released in sequence via
+ * --enter-delay, so the page assembles itself in order rather than all
+ * appearing at once. Used only for content already on screen at load;
+ * anything below the fold uses the scroll-driven .reveal system instead.
  */
 @media (prefers-reduced-motion: no-preference) {
   [data-enter] {
@@ -57,10 +307,6 @@ body {
   [data-enter="rule"] {
     animation-name: enter-rule;
     transform-origin: left center;
-  }
-
-  [data-enter="mask"] {
-    animation-name: enter-mask;
   }
 }
 
@@ -75,7 +321,6 @@ body {
   }
 }
 
-/* The masthead rule draws itself across the page. */
 @keyframes enter-rule {
   from {
     transform: scaleX(0);
@@ -85,39 +330,53 @@ body {
   }
 }
 
-/* Headline lines wipe up from behind their own baseline. */
-@keyframes enter-mask {
-  from {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
+/* ─────────────────────────────────────────────────────────────
+   Scroll reveal — below the fold
+   ───────────────────────────────────────────────────────────── */
 
 /*
- * Scroll reveal. The <Reveal> component flips [data-shown] once its element
- * enters the viewport; everything before that sits offset and transparent.
- */
-/*
+ * The <Reveal> component flips [data-shown] once its element enters the
+ * viewport; everything before that sits offset and transparent.
+ *
  * Only hide the pre-reveal state when scripting is available to un-hide it.
- * Without this guard, a failed or blocked bundle would leave whole sections
- * invisible; browsers too old for `scripting` ignore the block and show
- * everything, which is the safe direction to fail in.
+ * Without this guard a failed or blocked bundle would leave whole sections
+ * invisible; browsers too old for the `scripting` query ignore the block and
+ * show everything, which is the safe direction to fail in.
  */
 @media (scripting: enabled) {
   .reveal {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(20px);
   }
+
+  /*
+   * Staggered child rows (list items, steps) hide ONLY when they sit inside a
+   * <Reveal>, which is the thing that will later release them. Written as a
+   * descendant selector rather than a bare class on purpose: the same Step and
+   * LedgerList components are used on the detail pages with no Reveal wrapper,
+   * and a bare `opacity: 0` there left the numbered steps invisible forever.
+   */
+  .reveal .reveal-item {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.reveal-item {
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.68, 0.24, 1),
+    transform 0.7s cubic-bezier(0.22, 0.68, 0.24, 1);
+}
+
+.reveal[data-shown] .reveal-item {
+  opacity: 1;
+  transform: none;
 }
 
 .reveal {
   transition:
-    opacity 0.7s cubic-bezier(0.22, 0.68, 0.24, 1),
-    transform 0.7s cubic-bezier(0.22, 0.68, 0.24, 1);
+    opacity 0.8s cubic-bezier(0.22, 0.68, 0.24, 1),
+    transform 0.8s cubic-bezier(0.22, 0.68, 0.24, 1);
 }
 
 .reveal[data-shown],
@@ -139,18 +398,249 @@ body {
   transform: scaleX(1);
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Motion on interaction
+   ───────────────────────────────────────────────────────────── */
+
+.marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 44s linear infinite;
+}
+
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.btn {
+  transition:
+    transform 0.12s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.lift {
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s ease;
+}
+
+.lift:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+.navlink {
+  position: relative;
+}
+
+.navlink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 100%;
+  height: 2px;
+  background: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.navlink:hover::after {
+  transform: scaleX(1);
+}
+
+/* The play button breathes until it is pressed. */
+.play-ring {
+  animation: play-pulse 2.4s ease-out infinite;
+}
+
+@keyframes play-pulse {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 45%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 24px transparent;
+  }
+}
+
+/* Fires twice the moment step 2 becomes available, so the unlock is felt. */
+.unlock-pulse {
+  animation: unlock-pulse 0.8s ease-out 2;
+}
+
+@keyframes unlock-pulse {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-ink) 45%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 18px transparent;
+  }
+}
+
+/*
+ * The gated join section. Collapsed rather than unmounted, so the markup is
+ * always in the document for crawlers and so revealing it does not tear the
+ * page apart underneath the reader.
+ */
+.gate-hidden {
+  visibility: hidden;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.gate-shown {
+  visibility: visible;
+  opacity: 1;
+  height: auto;
+  pointer-events: auto;
+  transition: opacity 0.5s ease;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Focus
+   ───────────────────────────────────────────────────────────── */
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Inside the accent-filled CTA band the accent ring would vanish — use ink. */
+.on-accent a:focus-visible,
+.on-accent button:focus-visible,
+.on-accent input:focus-visible {
+  outline-color: var(--color-ink);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   FAQ accordion (native <details>)
+   ───────────────────────────────────────────────────────────── */
+
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary:hover {
+  color: var(--color-cream);
+}
+
+.faq .faq-ic {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.faq details[open] .faq-ic {
+  transform: rotate(180deg);
+}
+
+.faq details[open] summary {
+  color: var(--color-cream);
+}
+
+.faq details[open] .faq-a > * {
+  animation: faq-in 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes faq-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Long-form legal prose
+   ───────────────────────────────────────────────────────────── */
+
+.prose h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  color: var(--color-cream);
+  margin: 2.2rem 0 0.75rem;
+}
+
+.prose p,
+.prose li {
+  color: var(--color-soft);
+  line-height: 1.7;
+  margin-bottom: 0.75rem;
+  max-width: 68ch;
+}
+
+.prose ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose strong {
+  color: var(--color-cream);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Reduced motion
+   ───────────────────────────────────────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
-  .reveal {
+  .reveal,
+  .reveal .reveal-item {
     opacity: 1;
     transform: none;
   }
 
   .reveal-rule {
     transform: scaleX(1);
+  }
+
+  .line > span {
+    transform: none;
   }
 
   *,
@@ -160,4 +650,258 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Hero depth
+   ───────────────────────────────────────────────────────────── */
+
+/*
+ * Light behind the hero: an accent bloom high on the right, a cooler pool low
+ * on the left. Both are enormous and very low opacity on purpose — you should
+ * never notice a gradient, only that the black has stopped feeling flat.
+ */
+.hero-aura {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+        58rem 38rem at 76% 14%,
+        color-mix(in srgb, var(--color-accent) 14%, transparent),
+        transparent 62%
+      ),
+    radial-gradient(
+      46rem 32rem at 10% 92%,
+      color-mix(in srgb, var(--color-accent-deep) 10%, transparent),
+      transparent 60%
+    );
+}
+
+/*
+ * A faint technical grid, the way a terminal is ruled. Masked to a soft oval
+ * so it never reaches the edges and never competes with the headline.
+ */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(72% 62% at 46% 42%, #000 28%, transparent 78%);
+  mask-image: radial-gradient(72% 62% at 46% 42%, #000 28%, transparent 78%);
+}
+
+/* The scroll cue: a hairline that drains downward, forever. */
+.scroll-cue span {
+  display: block;
+  width: 1px;
+  height: 100%;
+  background: var(--color-accent);
+  transform-origin: top center;
+  animation: scroll-cue 2.1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  35% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  70%,
+  100% {
+    transform: scaleY(1) translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Streak grid
+   ───────────────────────────────────────────────────────────── */
+
+/* Each cell pops in on a stagger, so the habit visibly accumulates. */
+.streak-cell {
+  animation: streak-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes streak-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue span {
+    animation: none;
+  }
+}
+
+/* Nothing on this page may be invisible on paper. */
+@media print {
+  .reveal,
+  .reveal .reveal-item {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Section rhythm
+   ───────────────────────────────────────────────────────────── */
+
+/*
+ * A long page needs a pulse. Bands alternate between the bare canvas and a
+ * raised tone, which gives three distinct depths once cards are stacked on
+ * top: canvas #08090b, band ~#0c0e12, card #101318. Subtle individually,
+ * but over nine screens it is the difference between a rhythm and a wall.
+ */
+.band-raised {
+  background: color-mix(in srgb, var(--color-surface) 55%, transparent);
+}
+
+/* A hairline of light along the top edge, the way a raised panel catches it. */
+.band-raised::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--band-edge) 30%,
+    color-mix(in srgb, var(--color-accent) 28%, transparent) 50%,
+    var(--band-edge) 70%,
+    transparent
+  );
+}
+
+/* The darkest band, for the cinema moment around the walkthrough. */
+.band-deep {
+  background: color-mix(in srgb, var(--color-canvas) 88%, var(--color-ink));
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Accent glow
+   ───────────────────────────────────────────────────────────── */
+
+/*
+ * A soft pool of accent light behind a focal element — the chat mock, the
+ * video, the statement. Always aria-hidden and never in flow; it exists so the
+ * thing in front of it looks lit rather than pasted on.
+ */
+.glow {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 9999px;
+  filter: blur(90px);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-accent) calc(var(--glow-opacity) * 100%), transparent),
+    transparent 70%
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   The statement
+   ───────────────────────────────────────────────────────────── */
+
+/* The one oversized typographic moment on the page. */
+.statement {
+  font-size: clamp(30px, 5.4vw, 68px);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Scroll progress
+   ───────────────────────────────────────────────────────────── */
+
+.progress-bar {
+  transform-origin: left center;
+  transform: scaleX(var(--progress, 0));
+  transition: transform 0.1s linear;
+}
+
+/*
+ * Parallax, where the browser can drive it off the scroller itself. No
+ * JavaScript, no scroll listener, and browsers without scroll-driven
+ * animations simply get a static backdrop, which is a perfectly good backdrop.
+ */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .parallax-drift {
+      animation: parallax-drift linear both;
+      animation-timeline: scroll();
+      animation-range: 0 100vh;
+    }
+  }
+}
+
+@keyframes parallax-drift {
+  to {
+    transform: translateY(14%);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Theme toggle icons
+   ───────────────────────────────────────────────────────────── */
+
+/*
+ * Which icon is visible is derived from the document, not from React state,
+ * so it is correct on the first painted frame of a statically exported page.
+ * The moon shows while dark is in effect; the sun shows while light is.
+ */
+[data-theme-icon="light"] {
+  display: none;
+}
+
+[data-theme-icon="dark"] {
+  display: block;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) [data-theme-icon="light"] {
+    display: block;
+  }
+
+  :root:not([data-theme="dark"]) [data-theme-icon="dark"] {
+    display: none;
+  }
+}
+
+:root[data-theme="light"] [data-theme-icon="light"] {
+  display: block;
+}
+
+:root[data-theme="light"] [data-theme-icon="dark"] {
+  display: none;
+}
+
+:root[data-theme="dark"] [data-theme-icon="light"] {
+  display: none;
+}
+
+:root[data-theme="dark"] [data-theme-icon="dark"] {
+  display: block;
+}
+
+/* The nav underline stays drawn for whichever section is currently on screen. */
+.navlink[aria-current]::after {
+  transform: scaleX(1);
 }

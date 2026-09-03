@@ -7,8 +7,11 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   // Served from github.com/jef000/pips-liberty, so GitHub Pages publishes it
   // under /pips-liberty/ rather than at the domain root.
-  basePath: "/pips-liberty",
-  assetPrefix: "/pips-liberty",
+  // Only apply basePath in production builds
+  ...(process.env.NODE_ENV === "production" && {
+    basePath: "/pips-liberty",
+    assetPrefix: "/pips-liberty",
+  }),
 };
 
 export default nextConfig;

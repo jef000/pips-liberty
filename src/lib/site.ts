@@ -6,9 +6,12 @@
 export const site = {
   name: "Pips & Liberty",
   brand: "Pips & Liberty · Proof Over Hype",
+  eyebrow: "For traders who show up when it stops being exciting",
   headline: {
     lead: "Master your pips.",
-    gold: "Then claim your liberty.",
+    /** Split so the last word can carry the accent marker in the headline. */
+    goldLead: "Then claim your",
+    gold: "liberty",
   },
   tagline:
     "A free trading community built on one habit: showing up. We track your streak, not your screenshots.",
@@ -18,6 +21,9 @@ export const site = {
     "How we're funded: FTMO may pay us a referral commission if you sign up through this link — you pay nothing extra either way.",
   riskWarning:
     "Trading carries real risk of loss. Nothing on this site is financial advice, and we don't sell signals or trade calls. Any partner relationship is disclosed in full, every time.",
+  /** Shown under the footer wordmark and on the legal pages. */
+  copyright:
+    "© 2026 Pips & Liberty. Trading involves risk; results vary and are never guaranteed.",
 } as const;
 
 export const links = {
@@ -25,6 +31,42 @@ export const links = {
   community: "https://chat.whatsapp.com/DbaoJHrCb7g0QEcBPhVkhj",
   propFirm: "https://trader.ftmo.com/?affiliates=JYXCdiqyzZgaEdoinSSl",
 } as const;
+
+/**
+ * The walkthrough video, and the gate in front of the join links.
+ *
+ * The gate is the conversion engine carried over from the QuantEdge concept:
+ * the join section stays collapsed until the visitor has watched enough of the
+ * walkthrough to know what they are joining. Ad traffic skips it — clicking
+ * the ad already showed intent, and making those visitors sit through a video
+ * before they can act only costs conversions.
+ *
+ * Set `gated: false` to open the join section to everyone from page load.
+ */
+export const video = {
+  /** YouTube ID of the walkthrough. Empty string renders a "not set up" state. */
+  youtubeId: "26EBf6ecwsQ",
+  gated: true,
+  /** Fraction of the video that unlocks the join section mid-playback. */
+  revealAtPercent: 0.6,
+  /** Fallback for videos with no readable duration; 0 disables it. */
+  revealAfterSeconds: 0,
+} as const;
+
+/**
+ * Analytics IDs. Both trackers stay completely inert while these contain
+ * "XXXX", and even with real IDs nothing loads until the visitor accepts the
+ * consent banner. Set real IDs before running paid traffic.
+ */
+export const analyticsIds = {
+  ga4Id: "G-XXXXXXXXXX",
+  metaPixelId: "XXXXXXXXXXXXXXX",
+} as const;
+
+/** True once an ID no longer looks like a placeholder. */
+export function isConfiguredId(id: string) {
+  return Boolean(id) && !/X{4,}/i.test(id);
+}
 
 /**
  * PU Prime's current deposit-bonus promotion, shown on /trade to make the
@@ -53,6 +95,19 @@ export const propFirmHighlight = {
   detail:
     "Choose an account size that fits your financial capacity — from $10,000 up to $200,000 in funded capital. Keep up to 90% of what you earn, with your fee refunded in full on your first payout.",
   caveat: "Prices and terms are set by FTMO — see ftmo.com for full details.",
+} as const;
+
+/**
+ * The community's own ribbon on the home page, so the middle route card
+ * carries the same weight as the two partner-backed ones either side of it.
+ * Unlike those, nothing here is set by a third party — it is simply what the
+ * community is, which is why it has no caveat about changing terms.
+ */
+export const communityHighlight = {
+  headline: "Free, with nothing behind the paywall",
+  detail:
+    "The classroom, the daily check-in, both live classes and the Saturday leaderboard are included from your first day. There is no paid tier to graduate to.",
+  caveat: "Priority approval goes to verified live accounts under Pips & Liberty.",
 } as const;
 
 /**
@@ -136,7 +191,7 @@ export function buildReparentBody(name: string, email: string): string {
     "",
     `I wish to request for my account to be migrated to ${reparent.partnerName} (${reparent.partnerEmail}).`,
     "",
-    "I'm currently accessing their trading community whereby I am receiving constant trading support, trading signals and daily check-ins.",
+    "I'm currently accessing their trading community whereby I am receiving constant trading support, daily check-ins and classroom sessions.",
     "",
     "This will be highly regarded.",
     "",

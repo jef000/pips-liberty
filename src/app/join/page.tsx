@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 
-import { Breadcrumbs, Headline, Masthead, delay } from "@/components/brand";
+import { DetailPage } from "@/components/detail";
 import { JoinFlow } from "@/components/join-flow";
+import { CheckIcon, Panel, Section, Stamp } from "@/components/ui";
+import { insideFree } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "See What's Inside",
@@ -17,21 +19,38 @@ export const metadata: Metadata = {
 
 export default function JoinPage() {
   return (
-    <main className="w-full max-w-[560px] px-6 py-10 sm:px-8 sm:py-14 lg:max-w-[680px]">
-      <Masthead asLink />
-      <Breadcrumbs page="See What's Inside" />
-      <Headline className="mb-3 text-[clamp(28px,7.5vw,38px)] lg:text-[44px]" />
-      <p
-        data-enter
-        style={delay(620)}
-        className="text-ink-soft mb-2 text-[15px] sm:text-[16px]"
-      >
-        Built on one habit: showing up. Streaks, not screenshots.
-      </p>
-
-      <div data-enter style={delay(720)}>
+    <DetailPage
+      page="See What's Inside"
+      eyebrow="The whole room, free"
+      title="Built on one habit: showing up."
+      lead="Here is everything inside, how to get verified, and the exact route to take depending on where your trading account already sits."
+      aside={
+        <Panel className="p-7">
+          <p className="font-display text-[19px] font-semibold">
+            Included from day one
+          </p>
+          <ul className="mt-5 space-y-3.5 text-sm">
+            {insideFree.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span
+                  aria-hidden
+                  className="bg-accent/10 text-accent-ink mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+                >
+                  <CheckIcon />
+                </span>
+                <span className="text-soft">{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="border-line mt-6 border-t pt-5">
+            <Stamp>No signals sold</Stamp>
+          </div>
+        </Panel>
+      }
+    >
+      <Section tone="raised">
         <JoinFlow />
-      </div>
-    </main>
+      </Section>
+    </DetailPage>
   );
 }

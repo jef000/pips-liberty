@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode, Ref } from "react";
 
-function CheckIcon({ className = "h-3 w-3" }: { className?: string }) {
+export function CheckIcon({ className = "h-3 w-3" }: { className?: string }) {
   return (
     <svg aria-hidden viewBox="0 0 16 16" className={className} fill="none">
       <path
@@ -15,14 +15,114 @@ function CheckIcon({ className = "h-3 w-3" }: { className?: string }) {
   );
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Section scaffolding
+   ───────────────────────────────────────────────────────────── */
+
+/**
+ * One band of the long home page. Every section shares the same gutters, the
+ * same maximum measure and the same hairline separator, which is what stops a
+ * page this long from reading like several pages stapled together.
+ */
+const TONES = {
+  canvas: "",
+  raised: "band-raised",
+  deep: "band-deep",
+} as const;
+
+export function Section({
+  id,
+  className = "",
+  bleed = false,
+  tone = "canvas",
+  children,
+}: {
+  id?: string;
+  className?: string;
+  /** Skips the inner width clamp — for full-bleed bands like the marquee. */
+  bleed?: boolean;
+  /** Alternating bands are what give a page this long a readable pulse. */
+  tone?: keyof typeof TONES;
+  children: ReactNode;
+}) {
+  return (
+    <section
+      id={id}
+      className={`border-line relative scroll-mt-20 overflow-hidden border-b ${TONES[tone]} ${className}`}
+    >
+      {bleed ? (
+        children
+      ) : (
+        <div className="mx-auto w-full max-w-6xl px-5 py-20 md:px-8 md:py-28">
+          {children}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/** The small uppercase accent label that opens every section. */
+export function Eyebrow({
+  index,
+  className = "",
+  children,
+}: {
+  /** Position in the page, e.g. "02". Editorial chrome — it makes a long
+      scroll feel authored and tells the reader how far through they are. */
+  index?: string;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <p
+      className={`text-accent-ink mb-4 flex items-center gap-2.5 font-mono text-[11px] font-semibold tracking-[0.14em] uppercase ${className}`}
+    >
+      {index ? (
+        <>
+          <span className="text-muted">{index}</span>
+          <span aria-hidden className="bg-line h-px w-6" />
+        </>
+      ) : null}
+      {children}
+    </p>
+  );
+}
+
+/**
+ * A section heading. Wrap one word in <span className="text-accent-ink"> for the accent marker.
+ *
+ * `text-balance` rather than hand-placed <br /> tags: these headings sit in
+ * half-width columns, so a break tuned for one viewport orphans a word at the
+ * next one — an em-dash stranded on its own line, for instance.
+ */
+export function SectionTitle({
+  className = "",
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <h2
+      className={`font-display text-[clamp(28px,5.6vw,38px)] leading-[1.06] font-semibold tracking-[-0.02em] text-balance md:text-[clamp(32px,2.9vw,44px)] ${className}`}
+    >
+      {children}
+    </h2>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Buttons
+   ───────────────────────────────────────────────────────────── */
+
 const baseButton =
-  "inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3.5 text-center text-[14.5px] font-semibold no-underline transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2";
+  "btn inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-center text-[14.5px] font-semibold no-underline";
 
 const variants = {
-  solid:
-    "bg-green text-cream shadow-card hover:bg-green-deep hover:shadow-card-hover focus-visible:outline-green",
-  outline:
-    "border border-rule-strong text-ink hover:border-ink hover:bg-paper-raised focus-visible:outline-ink",
+  solid: "bg-accent text-ink hover:bg-accent-deep",
+  outline: "border border-line-strong text-cream hover:border-accent hover:text-accent-ink",
+  /** For the accent-filled join band, where the accent itself is the ground. */
+  invert: "bg-ink text-on-ink hover:opacity-90",
 } as const;
 
 type Variant = keyof typeof variants;
@@ -31,25 +131,30 @@ export function LinkButton({
   href,
   variant = "outline",
   className = "",
+  full = true,
+  onClick,
   children,
 }: {
   href: string;
   variant?: Variant;
   className?: string;
+  /** Full width by default — the detail pages stack buttons in a narrow column. */
+  full?: boolean;
+  onClick?: () => void;
   children: ReactNode;
 }) {
-  const classes = `${baseButton} ${variants[variant]} ${className}`;
+  const classes = `${baseButton} ${variants[variant]} ${full ? "w-full" : ""} ${className}`;
 
-  if (href.startsWith("http")) {
+  if (href.startsWith("http") || href.startsWith("mailto:")) {
     return (
-      <a href={href} className={classes}>
+      <a href={href} onClick={onClick} className={classes}>
         {children}
       </a>
     );
   }
 
   return (
-    <Link href={href} className={classes}>
+    <Link href={href} onClick={onClick} className={classes}>
       {children}
     </Link>
   );
@@ -58,12 +163,13 @@ export function LinkButton({
 export function Button({
   variant = "solid",
   className = "",
+  full = true,
   children,
   ...props
-}: ComponentProps<"button"> & { variant?: Variant }) {
+}: ComponentProps<"button"> & { variant?: Variant; full?: boolean }) {
   return (
     <button
-      className={`${baseButton} ${variants[variant]} cursor-pointer disabled:cursor-wait disabled:opacity-60 ${className}`}
+      className={`${baseButton} ${variants[variant]} ${full ? "w-full" : ""} cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
       {...props}
     >
       {children}
@@ -71,9 +177,33 @@ export function Button({
   );
 }
 
+/* ─────────────────────────────────────────────────────────────
+   Cards and rows
+   ───────────────────────────────────────────────────────────── */
+
+/** The raised panel every card on the site is cut from. */
+export function Panel({
+  className = "",
+  lift = false,
+  children,
+}: {
+  className?: string;
+  /** Adds the hover-rise treatment — only for panels that are themselves links. */
+  lift?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className={`border-line bg-surface shadow-panel rounded-2xl border ${lift ? "lift" : ""} ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
 /**
  * A card-style link row: numbered badge, title, hint, trailing arrow.
- * `emphasis` renders it as a filled accent card for the one primary action per page.
+ * `emphasis` renders it as a filled accent card for the one primary action.
  */
 export function CtaRow({
   href,
@@ -81,12 +211,14 @@ export function CtaRow({
   title,
   hint,
   emphasis = false,
+  className = "",
 }: {
   href: string;
   index: string;
   title: ReactNode;
   hint: ReactNode;
   emphasis?: boolean;
+  className?: string;
 }) {
   const Tag = href.startsWith("http") ? "a" : Link;
 
@@ -94,22 +226,22 @@ export function CtaRow({
     return (
       <Tag
         href={href}
-        className="group bg-green shadow-card hover:shadow-card-hover mb-3 flex items-center gap-4 rounded-2xl px-5 py-5 no-underline transition-all hover:-translate-y-0.5 sm:px-6 sm:py-6"
+        className={`group bg-accent text-ink flex items-center gap-4 rounded-2xl px-5 py-5 no-underline transition-transform hover:-translate-y-0.5 sm:px-6 sm:py-6 ${className}`}
       >
-        <span className="bg-white/15 text-cream flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-semibold">
+        <span className="bg-ink/15 flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-semibold">
           {index}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="font-display block text-[17px] leading-snug font-semibold text-cream sm:text-[19px]">
+          <span className="font-display block text-[17px] leading-snug font-semibold sm:text-[19px]">
             {title}
           </span>
-          <span className="text-cream/80 mt-1 block text-[13px] leading-snug sm:text-[13.5px]">
+          <span className="text-ink/70 mt-1 block text-[13px] leading-snug sm:text-[13.5px]">
             {hint}
           </span>
         </span>
         <span
           aria-hidden
-          className="text-cream/80 shrink-0 text-[18px] transition-transform group-hover:translate-x-1"
+          className="shrink-0 text-[18px] transition-transform group-hover:translate-x-1"
         >
           →
         </span>
@@ -120,22 +252,20 @@ export function CtaRow({
   return (
     <Tag
       href={href}
-      className="group border-rule shadow-card hover:shadow-card-hover hover:border-green/30 mb-3 flex items-center gap-4 rounded-2xl border bg-white px-5 py-4 no-underline transition-all hover:-translate-y-0.5 sm:px-6 sm:py-5"
+      className={`group border-line bg-surface hover:border-accent/40 flex items-center gap-4 rounded-2xl border px-5 py-4 no-underline transition-all hover:-translate-y-0.5 sm:px-6 sm:py-5 ${className}`}
     >
-      <span className="bg-paper-raised text-ink-soft group-hover:bg-green-soft group-hover:text-green flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-semibold transition-colors">
+      <span className="bg-surface-2 text-muted group-hover:text-accent-ink flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-[13px] font-semibold transition-colors">
         {index}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="font-display group-hover:text-green block text-[16px] leading-snug font-semibold text-ink transition-colors sm:text-[17px]">
+        <span className="font-display text-cream group-hover:text-accent-ink block text-[16px] leading-snug font-semibold transition-colors sm:text-[17px]">
           {title}
         </span>
-        <span className="text-ink-faint mt-1 block text-[13px] leading-snug">
-          {hint}
-        </span>
+        <span className="text-muted mt-1 block text-[13px] leading-snug">{hint}</span>
       </span>
       <span
         aria-hidden
-        className="text-ink-faint group-hover:text-green shrink-0 text-[18px] transition-all group-hover:translate-x-1"
+        className="text-muted group-hover:text-accent-ink shrink-0 text-[18px] transition-all group-hover:translate-x-1"
       >
         →
       </span>
@@ -153,13 +283,38 @@ export function Stamp({
 }) {
   return (
     <div
-      className={`border-green/25 bg-green-soft text-green inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[12.5px] font-semibold whitespace-nowrap ${className}`}
+      className={`border-accent/25 bg-accent/10 text-accent-ink inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[12.5px] font-semibold whitespace-nowrap ${className}`}
     >
       <CheckIcon className="h-3.5 w-3.5 shrink-0" />
       {children}
     </div>
   );
 }
+
+/** A partner highlight ribbon — the promo blocks on /trade and /scale. */
+export function Highlight({
+  headline,
+  detail,
+  caveat,
+  className = "",
+}: {
+  headline: string;
+  detail: string;
+  caveat: string;
+  className?: string;
+}) {
+  return (
+    <div className={`border-accent/25 bg-accent/5 rounded-2xl border px-5 py-4 ${className}`}>
+      <p className="text-accent-ink text-[15px] font-bold">{headline}</p>
+      <p className="text-soft mt-1 text-[13.5px] leading-relaxed">{detail}</p>
+      <p className="text-muted mt-2 text-[11.5px]">{caveat}</p>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Document primitives — the detail pages and the join flow
+   ───────────────────────────────────────────────────────────── */
 
 /** A document section: an optional numbered badge + heading, spaced rather than ruled. */
 export function Entry({
@@ -184,11 +339,11 @@ export function Entry({
           className="mb-4 flex items-center gap-2.5 outline-none"
         >
           {index ? (
-            <span className="bg-green-soft text-green flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold">
+            <span className="bg-accent/10 text-accent-ink flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold">
               {index}
             </span>
           ) : null}
-          <span className="text-ink text-[15px] font-semibold">{title}</span>
+          <span className="text-cream text-[15px] font-semibold">{title}</span>
         </h2>
       ) : null}
       {children}
@@ -197,22 +352,28 @@ export function Entry({
 }
 
 /** A tick list — perks, inclusions, anything being enumerated. */
-export function LedgerList({ items }: { items: readonly string[] }) {
+export function LedgerList({
+  items,
+  className = "",
+}: {
+  items: readonly string[];
+  className?: string;
+}) {
   return (
-    <ul className="flex flex-col gap-1">
+    <ul className={`flex flex-col gap-1 ${className}`}>
       {items.map((item, i) => (
         <li
           key={item}
           style={{ transitionDelay: `${i * 70}ms` }}
-          className="reveal hover:bg-paper-raised flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14.5px] transition-colors"
+          className="reveal-item hover:bg-surface-2 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14.5px] transition-colors"
         >
           <span
             aria-hidden
-            className="bg-green-soft text-green flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+            className="bg-accent/10 text-accent-ink flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
           >
             <CheckIcon />
           </span>
-          <span className="text-ink">{item}</span>
+          <span className="text-soft">{item}</span>
         </li>
       ))}
     </ul>
@@ -251,11 +412,11 @@ export function Step({
   return (
     <li
       style={{ transitionDelay: `${index * 90}ms` }}
-      className="reveal flex gap-3 rounded-lg px-3 py-2.5 text-[14.5px] [counter-increment:s]"
+      className="reveal-item text-soft flex gap-3 rounded-lg px-3 py-2.5 text-[14.5px] [counter-increment:s]"
     >
       <span
         aria-hidden
-        className="bg-paper-raised text-ink-soft before:content-[counter(s,decimal-leading-zero)] flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold"
+        className="bg-surface-2 text-muted before:content-[counter(s,decimal-leading-zero)] flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-semibold"
       />
       <span className="flex-1 pt-0.5">{children}</span>
     </li>

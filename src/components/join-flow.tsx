@@ -5,7 +5,7 @@ import type { ReactNode, Ref } from "react";
 
 import { Disclosure } from "@/components/brand";
 import { Reveal } from "@/components/reveal";
-import { Button, Entry, LedgerList, LinkButton, Step, Steps } from "@/components/ui";
+import { Button, Entry, LinkButton, Step, Steps } from "@/components/ui";
 import {
   COMMUNITY_REDIRECT_SECONDS,
   GOOGLE_FORM_EMBED_HEIGHT,
@@ -24,14 +24,6 @@ import {
  * submitting, so the "which one are you?" question moved out of the form.
  */
 type Stage = "start" | "community" | "broker" | "reparent";
-
-const PERKS = [
-  "The full trading-psychology classroom",
-  "Daily End-of-Day check-in — builds your streak",
-  "Live classes Tue & Thu, 8pm EAT",
-  "The Saturday streak leaderboard",
-  "Free Habit Calendar & Journal",
-] as const;
 
 const PATH_OPTIONS: { stage: Stage; label: string }[] = [
   { stage: "community", label: "I already have a live PU Prime account under Pips & Liberty" },
@@ -83,18 +75,12 @@ export function JoinFlow() {
     return (
       <>
         <Reveal>
-          <Entry index="01" title="Inside, free">
-            <LedgerList items={PERKS} />
-          </Entry>
-        </Reveal>
-
-        <Reveal>
-          <Entry index="02" title="How to join">
+          <Entry index="01" title="How to join">
             <Steps>
               <Step index={0}>
                 <b>Open a live PU Prime account and fund</b> — discipline is
-                only tested when real money is on the line. Use the{" "}
-                <b>Trade with me</b> button on the home page
+                only tested when real money is on the line. Start from the{" "}
+                <b>Open your account</b> step on the home page
               </Step>
               <Step index={1}>
                 <b>Join our WhatsApp community</b> — tap the link below, no
@@ -105,7 +91,7 @@ export function JoinFlow() {
                 classroom, check-ins and Habit Calendar
               </Step>
             </Steps>
-            <p className="text-clay bg-clay-soft mt-4 rounded-lg px-3.5 py-2.5 text-[13px] font-semibold">
+            <p className="text-amber bg-amber/10 mt-4 rounded-lg px-3.5 py-2.5 text-[13px] font-semibold">
               Priority for approval is given to traders with a live PU Prime
               account.
             </p>
@@ -114,8 +100,8 @@ export function JoinFlow() {
         </Reveal>
 
         <Reveal>
-          <Entry index="03" title="Start here">
-            <p className="text-ink-soft mb-4 text-[14.5px]">
+          <Entry index="02" title="Start here">
+            <p className="text-soft mb-4 text-[14.5px]">
               Fill out the quick form below — takes about 20 seconds.
             </p>
             <GoogleFormEmbed />
@@ -123,7 +109,7 @@ export function JoinFlow() {
         </Reveal>
 
         <Reveal>
-          <Entry index="04" title="Which one are you?">
+          <Entry index="03" title="Which one are you?">
             <div>
               {PATH_OPTIONS.map(({ stage: target, label }, i) => (
                 <PathRow
@@ -161,7 +147,7 @@ export function JoinFlow() {
           Open the community on WhatsApp →
         </LinkButton>
         <p
-          className="text-ink-faint mt-3 text-center font-mono text-[11.5px] tracking-[0.04em] uppercase"
+          className="text-muted mt-3 text-center font-mono text-[11.5px] tracking-[0.04em] uppercase"
           aria-live="polite"
         >
           {countdown > 0 ? `Redirecting in ${countdown}…` : "Redirecting…"}
@@ -200,7 +186,7 @@ export function JoinFlow() {
 
       {isReparentConfigured ? (
         <>
-          <p className="text-ink-soft mb-4 text-[14.5px]">
+          <p className="text-soft mb-4 text-[14.5px]">
             No problem — if your account was opened under another partner,
             here&apos;s how to move it under Pips &amp; Liberty so we can
             approve you into the community. It&apos;s a quick, free fix, and
@@ -247,7 +233,7 @@ export function JoinFlow() {
               />
             </Field>
           </div>
-          <p className="text-ink-faint mt-2 text-[12.5px]">
+          <p className="text-muted mt-2 text-[12.5px]">
             Fill these in to personalise the email below, or leave them blank
             and edit the placeholders yourself.
           </p>
@@ -256,7 +242,7 @@ export function JoinFlow() {
             readOnly
             aria-label="Migration email to send to PU Prime support"
             value={buildReparentPreview(trader.name, trader.email)}
-            className="bg-paper-raised border-rule-strong text-ink mt-4 min-h-[220px] w-full resize-y rounded-xl border p-4 font-mono text-[12.5px] leading-relaxed"
+            className="bg-surface border-line-strong text-cream mt-4 min-h-[220px] w-full resize-y rounded-xl border p-4 font-mono text-[12.5px] leading-relaxed"
           />
 
           <LinkButton
@@ -275,7 +261,7 @@ export function JoinFlow() {
             Or copy the email →
           </Button>
           <p
-            className="text-green mt-2 min-h-4 text-center text-[12.5px]"
+            className="text-accent-ink mt-2 min-h-4 text-center text-[12.5px]"
             aria-live="polite"
           >
             {copied
@@ -291,7 +277,7 @@ export function JoinFlow() {
           </Steps>
         </>
       ) : (
-        <div className="border-rule-strong text-ink-soft bg-paper-raised rounded-xl border border-dashed p-5 text-[14px] leading-relaxed">
+        <div className="border-line-strong text-soft bg-surface rounded-xl border border-dashed p-5 text-[14px] leading-relaxed">
           We&apos;re still setting up the account-move process for PU Prime —
           check back soon. In the meantime, go ahead and join the WhatsApp
           community; we&apos;ll sort out the account match by hand.
@@ -320,7 +306,7 @@ function Panel({
       <h2
         ref={headingRef}
         tabIndex={-1}
-        className="font-display text-ink mb-5 text-[22px] leading-snug font-bold outline-none sm:text-[26px]"
+        className="font-display text-cream mb-5 text-[22px] leading-snug font-bold outline-none sm:text-[26px]"
       >
         {title}
       </h2>
@@ -345,12 +331,12 @@ function PathRow({
       type="button"
       onClick={onClick}
       style={{ transitionDelay: `${index * 80}ms` }}
-      className="reveal group border-rule hover:border-green/30 hover:shadow-card text-ink mb-2 flex w-full cursor-pointer items-center justify-between gap-4 rounded-xl border bg-white px-4 py-3.5 text-left text-[14.5px] transition-all"
+      className="reveal-item group border-line hover:border-accent/40 text-cream mb-2 flex w-full cursor-pointer items-center justify-between gap-4 rounded-xl border bg-surface px-4 py-3.5 text-left text-[14.5px] transition-all"
     >
       <span>{label}</span>
       <span
         aria-hidden
-        className="text-ink-faint group-hover:text-green shrink-0 text-[16px] transition-all group-hover:translate-x-1"
+        className="text-muted group-hover:text-accent-ink shrink-0 text-[16px] transition-all group-hover:translate-x-1"
       >
         →
       </span>
@@ -364,10 +350,10 @@ function GoogleFormEmbed() {
 
   if (isPlaceholder) {
     return (
-      <div className="border-rule-strong text-ink-faint bg-paper-raised rounded-xl border border-dashed p-6 text-center text-[13px] leading-relaxed">
+      <div className="border-line-strong text-muted bg-surface rounded-xl border border-dashed p-6 text-center text-[13px] leading-relaxed">
         Google Form not connected yet — paste its link into{" "}
-        <code className="text-clay font-mono">GOOGLE_FORM_URL</code> in{" "}
-        <code className="text-clay font-mono">src/lib/site.ts</code>.
+        <code className="text-amber font-mono">GOOGLE_FORM_URL</code> in{" "}
+        <code className="text-amber font-mono">src/lib/site.ts</code>.
       </div>
     );
   }
@@ -377,7 +363,7 @@ function GoogleFormEmbed() {
       <iframe
         src={`${GOOGLE_FORM_URL}?embedded=true`}
         title={`Join ${site.name}`}
-        className="border-rule w-full rounded-xl border bg-white"
+        className="border-line w-full rounded-xl border bg-surface"
         style={{ height: GOOGLE_FORM_EMBED_HEIGHT }}
       >
         Loading…
@@ -386,7 +372,7 @@ function GoogleFormEmbed() {
         href={GOOGLE_FORM_URL}
         target="_blank"
         rel="noreferrer"
-        className="text-ink-faint hover:text-green mt-2 block text-center text-[12px] underline underline-offset-2"
+        className="text-muted hover:text-accent-ink mt-2 block text-center text-[12px] underline underline-offset-2"
       >
         Form not loading? Open it in a new tab →
       </a>
@@ -399,7 +385,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="text-ink-faint hover:text-green mb-6 block cursor-pointer text-[13.5px] font-medium transition-colors"
+      className="text-muted hover:text-accent-ink mb-6 block cursor-pointer text-[13.5px] font-medium transition-colors"
     >
       ← Start over
     </button>
@@ -419,7 +405,7 @@ function Field({
     <div>
       <label
         htmlFor={htmlFor}
-        className="text-ink-soft mb-1.5 block text-[13px] font-medium"
+        className="text-soft mb-1.5 block text-[13px] font-medium"
       >
         {label}
       </label>
@@ -432,18 +418,18 @@ function TextInput(props: React.ComponentProps<"input">) {
   return (
     <input
       {...props}
-      className="border-rule-strong text-ink hover:border-ink focus:border-green focus:ring-green/15 placeholder:text-ink-faint w-full rounded-lg border bg-white px-3.5 py-2.5 text-[15px] outline-none transition-colors focus:ring-4"
+      className="border-line-strong text-cream hover:border-line-strong focus:border-accent focus:ring-accent/20 placeholder:text-muted w-full rounded-lg border bg-surface px-3.5 py-2.5 text-[15px] outline-none transition-colors focus:ring-4"
     />
   );
 }
 
 function Address({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <p className="bg-paper-raised flex items-baseline justify-between gap-3 rounded-lg px-3.5 py-2.5 text-[13px]">
-      <span className="text-ink-faint text-[11px] font-semibold tracking-[0.05em] uppercase">
+    <p className="bg-surface flex items-baseline justify-between gap-3 rounded-lg px-3.5 py-2.5 text-[13px]">
+      <span className="text-muted text-[11px] font-semibold tracking-[0.05em] uppercase">
         {label}
       </span>
-      <b className="text-ink truncate font-semibold">{children}</b>
+      <b className="text-cream truncate font-semibold">{children}</b>
     </p>
   );
 }
